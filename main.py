@@ -14,7 +14,7 @@ def get_address(placename_url):
     try:
         ret = _get()
     except:
-        _ERR_MSGs.append(f"Something went wrong with this place: {place}\nThis corresponds to this url: {url}\n")
+        _ERR_MSGs.append(f"Something went wrong with this place: {place}\nThis corresponds to this url: {url}")
         ret = _STR_FAILED_TO_GET
 
     return [ret]
@@ -26,13 +26,14 @@ def main(CSV_PATH, INDEX_COLUMN_NAME, LINK_COLUMN_NAME, TAG_COLUMN_NAME=None):
 
     urls = file[LINK_COLUMN_NAME].values.tolist()
     places = file.index.values.tolist()
-    addys = list(map(get_address, zip(places,urls)))
 
-    file[["Address"]] = addys
+    file[["Address"]] = list(map(get_address, zip(places,urls)))
     file = file.loc[file["Address"] != _STR_FAILED_TO_GET]
 
-    print()
-    list(map(print, _ERR_MSGs))
+    SEP_LINE = "--------------------------------------------------"
+    print(SEP_LINE)
+    print(f"\n{SEP_LINE}\n".join(_ERR_MSGs))
+    print(SEP_LINE)
     if len(_ERR_MSGs) > 0:
         print("None of the failed URLs were emitted to the output CSVs.\n")
 
